@@ -1,0 +1,141 @@
+/* Overriding some bootstrap styles. */
+:root {
+    --ovenspace-body-font-size: .825rem;
+    --bs-font-sans-serif: "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+}
+
+body {
+    --bs-body-font-size: var(--ovenspace-body-font-size);
+    font-weight: 400;
+    line-height: 1.625;
+    color: #6c757d;
+}
+
+@media (min-width: 1200px) {
+    .container {
+        max-width: 1150px;
+    }
+}
+
+.fw-bold {
+    font-weight: 500 !important;
+}
+
+.btn {
+    font-size: var(--ovenspace-body-font-size);
+}
+
+.form-select {
+    font-size: var(--ovenspace-body-font-size);
+}
+
+.h1, .h2, .h3, .h4, .h5, .h6, h1, h2, h3, h4, h5, h6 {
+    margin-top: 0;
+    margin-bottom: .5rem;
+    font-weight: 500;
+    line-height: 1.2;
+    color: #495057;
+}
+
+.h5, .h6, h5, h6 {
+    font-size: .825rem;
+}
+
+.modal-content {
+    border: none;
+}
+
+.modal-header {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem;
+    border-bottom: 1px solid #dee6ed;
+    border-top-left-radius: .3rem;
+    border-top-right-radius: .3rem;
+}
+
+.modal-title {
+    margin-bottom: 0;
+    line-height: 1.625;
+}
+
+/* OvenSpace styles. */
+.app-wrapper {
+    min-height: 100vh;
+    background: #edeae4;
+}
+
+.header {
+    background: #fff;
+}
+
+.footer {
+    background: #191919;
+}
+
+.bi-logo {
+    width: auto;
+    height: 36px;
+}
+
+.input-video {
+    width: 100%;
+    height: 100%;
+    background-color: #000;
+    object-fit: cover;
+}
+
+.transparent {
+    opacity: 0;
+}
+
+.seat {
+    background: #000;
+}
+
+.seat-on {
+    background: #000;
+}
+
+.op-media-element-container video {
+    object-fit: cover;
+}
+
+.input-device-modal .modal-header {
+    background: #ffbb10;
+}
+
+.input-device-modal .modal-header h5 {
+    color: #000;
+}
+
+.input-device-modal .modal-content {
+    background: #edeae4;
+}
+
+.btn-warning {
+    background: #ffbb10;
+    border-color: #ffbb10;
+    color: #000 !important;
+}
+
+.local-player-span {
+    position: absolute;
+    color: #000;
+    background: rgb(255 187 16 / 70%);
+    padding: 0.1rem 0.3rem;
+    border-radius: 0.2rem;
+    left: 0.5rem;
+    top: 0.5rem;
+    font-size: 0.8rem;
+    cursor: default;
+    display: none;
+}
+
+.local-player {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}

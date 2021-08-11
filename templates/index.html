@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="OvenMediaEngine OvenPlayer WebRTC Input Conference Demo">
+    <meta name="author" content="Airensoft">
+
+    <title>OvenSpace</title>
+
+    <link rel="shortcut icon" href="/static/img/ovenspace.ico">
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500&amp;display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+
+    <link rel="stylesheet" href="/static/css/ovenspace.css">
+
+</head>
+
+<body class="app">
+<div class="app-wrapper d-flex flex-column">
+    <div class="header">
+        <div class="container d-flex justify-content-between align-items-end py-4">
+            <h1 class="m-0">
+                <img class="bi-logo" src="/static/img/ovenspace_bi.svg" alt="OvenSpace">
+            </h1>
+            <div>
+                Users: <span id="total-user-count-span" class="fw-bold">0</span>,
+                Video Users: <span id="video-user-count-span" class="fw-bold">0</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="body container flex-grow-1 py-5">
+        <div id="seat-area" class="row">
+
+        </div>
+    </div>
+
+    <div class="footer">
+        <div class="container d-flex justify-content-center align-items-center py-3 fw-lighter text-white">
+            <p class="text-break text-center m-0">
+                Powered by
+                <a class="fw-bold text-white" href="https://github.com/AirenSoft/OvenMediaEngine"
+                   target="_blank">OvenMediaEngine</a>, Open-Source Streaming Server with Sub-Second Latency.
+            </p>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade input-device-modal" id="input-device-modal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 id="before-streaming-title" class="modal-title">Please choose sharing mode</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="d-flex flex-column flex-lg-row justify-content-start">
+                    <div class="col-12 col-lg-6">
+                        <div class="ratio ratio-16x9">
+                            <video id="input-video" muted autoplay playsinline
+                                   class="input-video shadow rounded"></video>
+                        </div>
+                        <div id="device-select-area" class="d-flex justify-content-start d-none mt-4">
+                            <div class="d-flex">
+                                <select id="video-source-select" class="constraints-select form-select"></select>
+                                <select id="audio-source-select"
+                                        class="constraints-select form-select ms-2"></select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-lg-6 mt-4 mt-lg-0 ps-lg-4">
+                        <div class="d-flex flex-column h-100 justify-content-center align-items-stretch">
+                            <div id="capture-select-area" class="d-flex justify-content-center align-items-center">
+                                <button id="share-device-button" class="btn btn-warning">
+                                    <i class="align-middle me-1 fas fa-fw fa-video"></i>
+                                    Share video
+                                </button>
+                                <!-- Because we are working on stabilization for Device Capture.
+                                <button id="share-display-button" class="btn btn-warning ms-2">
+                                    <i class="align-middle me-1 fas fa-fw fa-desktop"></i>
+                                    Share screen
+                                </button>
+                                -->
+                            </div>
+                            <div id="start-share-area"
+                                 class="start-share-area d-flex justify-content-center align-items-center d-none">
+                                <button disabled id="start-share-button" class="btn btn-warning">Start
+                                    sharing
+                                </button>
+                                <button disabled id="back-to-capture-select-button"
+                                        class="btn btn-outline-secondary ms-2" title="Back to capture selection">
+                                    Cancel
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <p id="input-error-message" class="mt-2 text-danger text-center d-none">
+
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<template id="seat-template">
+    <div class="col-12 col-md-6 col-lg-4">
+        <div id="seat-<%= streamName %>" class="seat mb-4 ratio ratio-16x9">
+            <div class="join-area d-flex justify-content-center align-items-center w-100 h-100">
+                <button class="join-button btn btn-warning">Participate</button>
+            </div>
+            <div class="player-area d-none">
+                <div id="player-<%= streamName %>">
+
+                </div>
+            </div>
+            <div class="local-player-area d-none">
+                <video id="local-player-<%= streamName %>" class="local-player" muted autoplay playsinline>
+
+                </video>
+                <span class="local-player-span">Local Stream</span>
+            </div>
+        </div>
+    </div>
+</template>
+
+<script>
+    const APP_NAME = '{{app_name}}';
+    const STREAM_NAME = '{{stream_name}}';
+    const OME_WEBRTC_INPUT_HOST = '{{webrtc_input_host}}';
+    const OME_WEBRTC_STREAMING_HOST = '{{webrtc_streaming_host}}';
+</script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"
+        integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
+        crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/underscore@1.13.0/underscore-umd-min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj"
+        crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.min.js"
+        integrity="sha512-eVL5Lb9al9FzgR63gDs1MxcDS2wFu3loYAgjIH0+Hg38tCS8Ag62dwKyH+wzDb+QauDpEZjXbMn11blw8cbTJQ=="
+        crossorigin="anonymous"></script>
+
+<!-- Load OvenLiveKit For Web -->
+<script src="https://cdn.jsdelivr.net/npm/ovenlivekit@latest/dist/OvenLiveKit.min.js"></script>
+
+<!-- Load OvenPlayer -->
+<script src="/static/libs/ovenplayer/ovenplayer.js"></script>
+
+<script src="/static/js/ovenspace.js"></script>
+
+</body>
+
+</html>
