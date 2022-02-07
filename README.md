@@ -66,7 +66,7 @@ $ docker run -d -p 3333:3333 -p 3478:3478 -p 8081:8081 -p 10006-10010:10006-1001
 ### Launch OvenSpace
 Start OvenSpace using the preset [`ovenspace.cfg`](./ovenspace.cfg) for OvenMediaEngine running with the Docker above. OvenSpace runs on the built-in development server of Flask.
 ```
-(venv) $ python OvenSpacy.py
+(venv) $ python OvenSpace.py
 ```
 You can check the OvenSpace running at http://localhost:5000. 
 
