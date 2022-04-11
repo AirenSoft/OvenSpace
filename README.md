@@ -110,6 +110,9 @@ Sets the [application name](https://airensoft.gitbook.io/ovenmediaengine/configu
 #### `OME_STREAM_NAME`
 Sets the stream name that OvenSpace will use to send or receive streams to the OvenMediaEngine. If `OME_STREAM_NAME` is set to `'stream-'`, OvenSpace sends and receives streams in the format `'stream-0'`, `'stream-1'`, `'stream-2'`.
 
+#### OME_RTMP_PROVIDER_PORT
+Sets the [port of RTMP Provider](https://airensoft.gitbook.io/ovenmediaengine/live-source/rtmp).
+
 #### `OME_WEBRTC_PROVIDER_ENABLE_TLS`
 `'true'` or `'false'`. Determines whether to use TLS when signalling with OvenMediaEngine's [WebRTC Provider](https://airensoft.gitbook.io/ovenmediaengine/live-source/webrtc-beta).
 

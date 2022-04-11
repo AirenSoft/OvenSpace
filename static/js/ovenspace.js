@@ -14,18 +14,24 @@ const inputVideo = document.getElementById('input-video');
 
 const beforeStreamingTitle = $('#before-streaming-title');
 
-const deviceSelectArea = $('#device-select-area');
+const deviceInputPreviewArea = $('#device-input-preview-area');
+const rtmpInputPreviewArea = $('#rtmp-input-preview-area');
 const captureSelectArea = $('#capture-select-area');
-const startShareArea = $('#start-share-area');
 
 const videoSourceSelect = $('#video-source-select');
 const audioSourceSelect = $('#audio-source-select');
 const constraintsSelect = $('.constraints-select');
 
+const rtmpInputUrlInput = $('#rtmp-input-url-input');
+const rtmpInputStreamkeyInput = $('#rtmp-input-streamkey-input');
+const waitingRtmpInputText = $('#waiting-rtmp-input-text');
+const connectedRtmpInputText = $('#connected-rtmp-input-text');
+
 const shareDeviceButton = $('#share-device-button');
 const shareDisplayButton = $('#share-display-button');
+const shareRtmpButton = $('#share-rtmp-button');
 
-const backToCaptureSelectButton = $('#back-to-capture-select-button');
+const backToCaptureSelectButton = $('.back-to-capture-select-button');
 const startShareButton = $('#start-share-button');
 
 const inputErrorMessage = $('#input-error-message');
@@ -53,6 +59,11 @@ shareDeviceButton.on('click', function () {
 
             showErrorMessage(error);
         });
+});
+
+shareRtmpButton.on('click', function () {
+    shareMode = 'rtmp';
+    readyStreaming();
 });
 
 constraintsSelect.on('change', function () {
@@ -159,7 +170,8 @@ function createWebRTCInput(streamName) {
 
         webRTCInput.getUserMedia(getDeviceConstraints()).then(function (stream) {
 
-            deviceSelectArea.removeClass('d-none');
+
+            deviceInputPreviewArea.removeClass('d-none');
             readyStreaming();
         }).catch(function (error) {
             cancelReadyStreaming();
@@ -182,20 +194,42 @@ function createWebRTCInput(streamName) {
 function readyStreaming() {
 
     captureSelectArea.addClass('d-none');
-    startShareArea.removeClass('d-none');
-    startShareArea.find('button').prop('disabled', false);
-    beforeStreamingTitle.text('Click start button to share your stream');
     inputErrorMessage.addClass('d-none').text('');
+
+    if (shareMode === 'device' || shareMode === 'display') {
+        deviceInputPreviewArea.find('button').prop('disabled', false);
+        beforeStreamingTitle.text('Click start button to share your WebCam / Mic');
+    }
+
+    if (shareMode === 'rtmp') {
+        rtmpInputPreviewArea.find('button').prop('disabled', false);
+        rtmpInputPreviewArea.removeClass('d-none');
+        beforeStreamingTitle.text('Send the input stream using a live encoder.');
+
+        rtmpInputUrlInput.val(OME_RTMP_INPUT_URL);
+        rtmpInputStreamkeyInput.val(selectedInputStreamName);
+    }
+
 }
 
 function resetInputUI() {
 
     inputVideo.srcObject = null;
+    selectedInputStreamName = null;
+    shareMode = null;
 
-    deviceSelectArea.addClass('d-none');
+    deviceInputPreviewArea.addClass('d-none');
+    deviceInputPreviewArea.find('button').prop('disabled', true);
 
-    startShareArea.addClass('d-none');
-    startShareArea.find('button').prop('disabled', true);
+    rtmpInputPreviewArea.addClass('d-none');
+    rtmpInputPreviewArea.find('button').prop('disabled', true);
+
+    rtmpInputUrlInput.val('');
+    rtmpInputStreamkeyInput.val('');
+
+    waitingRtmpInputText.removeClass('d-none');
+    connectedRtmpInputText.addClass('d-none');
+
 
     beforeStreamingTitle.text('Please choose sharing mode');
     captureSelectArea.removeClass('d-none');
@@ -456,6 +490,19 @@ function gotStreams(resp) {
 
             // Create player when new stream is detected
             if (!currentStreams.includes(streamName)) {
+
+                // rtmp input stream detected
+                if (shareMode === 'rtmp'
+                    && streamName === selectedInputStreamName) {
+
+                    waitingRtmpInputText.addClass('d-none');
+                    connectedRtmpInputText.removeClass('d-none');
+
+                    setTimeout(function () {
+
+                        inputDeviceModal.modal('hide');
+                    }, 3000)
+                }
 
                 // making peer connection with zero delay don't work well...
                 setTimeout(function () {

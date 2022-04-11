@@ -28,8 +28,11 @@
                 <img class="bi-logo" src="/static/img/ovenspace_bi.svg" alt="OvenSpace">
             </h1>
             <div>
-                Users: <span id="total-user-count-span" class="fw-bold">0</span>,
-                Video Users: <span id="video-user-count-span" class="fw-bold">0</span>
+                Users:
+                <span id="total-user-count-span" class="fw-bold">0</span>
+                ,
+                Video Users:
+                <span id="video-user-count-span" class="fw-bold">0</span>
             </div>
         </div>
     </div>
@@ -59,44 +62,90 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <div class="d-flex flex-column flex-lg-row justify-content-start">
+                <div id="device-input-preview-area" class="row d-none">
                     <div class="col-12 col-lg-6">
                         <div class="ratio ratio-16x9">
                             <video id="input-video" muted autoplay playsinline
                                    class="input-video shadow rounded"></video>
                         </div>
-                        <div id="device-select-area" class="d-flex justify-content-start d-none mt-4">
-                            <div class="d-flex">
-                                <select id="video-source-select" class="constraints-select form-select"></select>
-                                <select id="audio-source-select"
-                                        class="constraints-select form-select ms-2"></select>
+                        <div class="d-flex justify-content-start mt-4">
+                            <div class="row">
+                                <div class="col-12 mb-2">
+                                    <select id="video-source-select"
+                                            class="constraints-select form-select"></select>
+                                </div>
+                                <div class="col-12">
+                                    <select id="audio-source-select"
+                                            class="constraints-select form-select"></select>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <div class="col-12 col-lg-6 mt-4 mt-lg-0 ps-lg-4">
-                        <div class="d-flex flex-column h-100 justify-content-center align-items-stretch">
-                            <div id="capture-select-area" class="d-flex justify-content-center align-items-center">
-                                <button id="share-device-button" class="btn btn-warning">
-                                    <i class="align-middle me-1 fas fa-fw fa-video"></i>
-                                    Share video
-                                </button>
-                                <!-- Because we are working on stabilization for Device Capture.
-                                <button id="share-display-button" class="btn btn-warning ms-2">
-                                    <i class="align-middle me-1 fas fa-fw fa-desktop"></i>
-                                    Share screen
-                                </button>
-                                -->
+                    <div class="col-12 col-lg-6 d-flex justify-content-center align-items-center mt-3 mt-lg-0">
+                        <button disabled id="start-share-button" class="btn btn-warning">
+                            Start sharing
+                        </button>
+                        <button disabled
+                                class="back-to-capture-select-button btn btn-outline-secondary ms-2" title="Back to share mode selection">
+                            Cancel
+                        </button>
+                    </div>
+                </div>
+                <div id="rtmp-input-preview-area" class="row d-none">
+                    <div class="col">
+                        <p class="mt-4">
+                            You can live streaming using live encoders such as
+                            <a target="_blank" href="https://obsproject.com/">OBS</a>,
+                            <a target="_blank" href="https://www.xsplit.com/">XSplit</a>, and
+                            <a target="_blank"
+                               href="https://play.google.com/store/apps/details?id=com.airensoft.ovenstreamencoder.camera">OvenStreamEncoder</a>.
+                        </p>
+                        <p>
+                            Detailed documentation can be found
+                            <a target="_blank"
+                               href="https://airensoft.gitbook.io/ovenmediaengine/getting-started#start-streaming">here</a>.
+                        </p>
+                        <div class="mt-4">
+                            <label for="exampleFormControlInput1" class="form-label">Server</label>
+                            <input id="rtmp-input-url-input" type="text" class="form-control" readonly>
+                        </div>
+                        <div class="mt-2">
+                            <label for="exampleFormControlInput1" class="form-label">Stream Key</label>
+                            <input id="rtmp-input-streamkey-input" type="text" class="form-control" readonly>
+                        </div>
+                        <div id="waiting-rtmp-input-text" class="mt-4 text-center">
+                            <div class="spinner-grow spinner-grow-sm" role="status">
+                                <span class="visually-hidden">Loading...</span>
                             </div>
-                            <div id="start-share-area"
-                                 class="start-share-area d-flex justify-content-center align-items-center d-none">
-                                <button disabled id="start-share-button" class="btn btn-warning">Start
-                                    sharing
-                                </button>
-                                <button disabled id="back-to-capture-select-button"
-                                        class="btn btn-outline-secondary ms-2" title="Back to capture selection">
-                                    Cancel
-                                </button>
-                            </div>
+                            Waiting for input stream.
+                        </div>
+                        <div id="connected-rtmp-input-text" class="mt-4 text-center text-primary d-none">
+                            The rtmp input stream is connected. <br>
+                            <span class="text-muted small">(The popup will close automatically.)</span>
+                        </div>
+                        <div class="mt-5 mb-4">
+                            <button disabled
+                                class="back-to-capture-select-button btn btn-outline-secondary w-100" title="Back to share mode selection">
+                            Cancel
+                        </button>
+                        </div>
+                    </div>
+                </div>
+                <div id="capture-select-area" class="row">
+                    <div class="col-12">
+                        <div class="d-flex justify-content-evenly align-items-center py-5">
+                            <button id="share-device-button" class="btn btn-warning p-5">
+                                WebCam / Mic
+                            </button>
+                            <button id="share-rtmp-button" class="btn btn-warning ms-2 p-5">
+                                Live Encoder
+                            </button>
+                            <!-- Because we are working on stabilization for Device Capture.
+                            <button id="share-display-button" class="btn btn-warning ms-2">
+                                <i class="align-middle me-1"></i>
+                                Share screen
+                            </button>
+                            -->
                         </div>
                     </div>
                 </div>
@@ -132,6 +181,7 @@
 <script>
     const APP_NAME = '{{app_name}}';
     const STREAM_NAME = '{{stream_name}}';
+    const OME_RTMP_INPUT_URL = '{{rtmp_input_url}}';
     const OME_WEBRTC_INPUT_HOST = '{{webrtc_input_host}}';
     const OME_WEBRTC_STREAMING_HOST = '{{webrtc_streaming_host}}';
 </script>
