@@ -1,0 +1,1 @@
+This asset folder to contain design elements that will use in the Readme.
