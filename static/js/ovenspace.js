@@ -114,7 +114,6 @@ function renderDevice(type, select, devices) {
 
             option.text(device.label);
             option.val(device.deviceId);
-
             select.append(option);
         });
     }
@@ -171,17 +170,22 @@ function createWebRTCInput(streamName) {
 
     webRTCInput.attachMedia(inputVideo);
 
+    let errorMsg = null;
+
     if (shareMode === 'device') {
 
         webRTCInput.getUserMedia(getDeviceConstraints()).then(function (stream) {
 
-
+        }).catch(function (error) {
+            // cancelReadyStreaming();
+            errorMsg = error;
+        }).finally(function () {
+            readyStreaming();
             deviceInputPreviewArea.removeClass('d-none');
             sourceSelectArea.removeClass('d-none');
-            readyStreaming();
-        }).catch(function (error) {
-            cancelReadyStreaming();
-            showErrorMessage(error);
+            if (errorMsg) {
+                showErrorMessage(errorMsg);
+            }
         });
     }
 
@@ -189,12 +193,17 @@ function createWebRTCInput(streamName) {
 
         webRTCInput.getDisplayMedia(getDisplayConstraints()).then(function (stream) {
 
+        }).catch(function (error) {
+            // cancelReadyStreaming();
+            errorMsg = error;
+
+        }).finally(function () {
+            readyStreaming();
             deviceInputPreviewArea.removeClass('d-none');
             sourceSelectArea.addClass('d-none');
-            readyStreaming();
-        }).catch(function (error) {
-            cancelReadyStreaming();
-            showErrorMessage(error);
+            if (errorMsg) {
+                showErrorMessage(errorMsg);
+            }
         });
     }
 }
@@ -315,12 +324,6 @@ function getDeviceConstraints() {
         newConstraints.video = {
             deviceId: {
                 exact: videoDeviceId
-            },
-            width: {
-                ideal: 1280
-            },
-            height: {
-                ideal: 720
             }
         };
     }
@@ -332,10 +335,6 @@ function getDeviceConstraints() {
             }
         };
     }
-
-    newConstraints.aspectRatio = {
-        ideal: 16 / 9
-    };
 
     return newConstraints;
 }
