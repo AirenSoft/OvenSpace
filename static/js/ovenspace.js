@@ -2,7 +2,7 @@ let currentStreams = [];
 let localStreams = [];
 let selectedInputStreamName = null;
 let shareMode = null;
-let webRTCInput = null;
+let liveKitInputMap = {};
 let tryToStreaming = false;
 
 const SEAT_COUNT = 9;
@@ -66,20 +66,15 @@ shareDeviceButton.on('click', function () {
         });
 });
 
+constraintsSelect.on('change', function () {
+
+    removeInputStream(selectedInputStreamName);
+    createWebRTCInput();
+});
+
 shareRtmpButton.on('click', function () {
     shareMode = 'rtmp';
     readyStreaming();
-});
-
-constraintsSelect.on('change', function () {
-
-    if (webRTCInput) {
-
-        webRTCInput.remove();
-        webRTCInput = null;
-    }
-
-    createWebRTCInput();
 });
 
 shareDisplayButton.on('click', function () {
@@ -121,9 +116,16 @@ function renderDevice(type, select, devices) {
     select.find('option').eq(0).prop('selected', true);
 }
 
-function createWebRTCInput(streamName) {
+function arrayRemove(arr, value) {
 
-    webRTCInput = OvenLiveKit.create({
+    return arr.filter(function (ele) {
+        return ele != value;
+    });
+}
+
+function createWebRTCInput() {
+
+    const input = OvenLiveKit.create({
         callbacks: {
             connected: function () {
 
@@ -158,8 +160,8 @@ function createWebRTCInput(streamName) {
 
                 if (tryToStreaming) {
 
-                    localStreams.pop(selectedInputStreamName);
-                    currentStreams.pop(selectedInputStreamName);
+                    currentStreams = arrayRemove(currentStreams, selectedInputStreamName);
+                    localStreams = arrayRemove(localStreams, selectedInputStreamName);
                     tryToStreaming = false;
                 }
 
@@ -168,13 +170,13 @@ function createWebRTCInput(streamName) {
         }
     });
 
-    webRTCInput.attachMedia(inputVideo);
+    input.attachMedia(inputVideo);
 
     let errorMsg = null;
 
     if (shareMode === 'device') {
 
-        webRTCInput.getUserMedia(getDeviceConstraints()).then(function (stream) {
+        input.getUserMedia(getDeviceConstraints()).then(function (stream) {
 
         }).catch(function (error) {
             // cancelReadyStreaming();
@@ -191,7 +193,7 @@ function createWebRTCInput(streamName) {
 
     if (shareMode === 'display') {
 
-        webRTCInput.getDisplayMedia(getDisplayConstraints()).then(function (stream) {
+        input.getDisplayMedia(getDisplayConstraints()).then(function (stream) {
 
         }).catch(function (error) {
             // cancelReadyStreaming();
@@ -206,6 +208,8 @@ function createWebRTCInput(streamName) {
             }
         });
     }
+
+    liveKitInputMap[selectedInputStreamName] = input;
 }
 
 function readyStreaming() {
@@ -257,13 +261,7 @@ function resetInputUI() {
 }
 
 function cancelReadyStreaming() {
-
-    if (webRTCInput) {
-
-        webRTCInput.remove();
-        webRTCInput = null;
-    }
-
+    removeInputStream(selectedInputStreamName);
     resetInputUI();
 }
 
@@ -297,13 +295,13 @@ function showErrorMessage(error) {
 
 function startStreaming() {
 
-    if (selectedInputStreamName && webRTCInput) {
+    if (selectedInputStreamName && liveKitInputMap[selectedInputStreamName]) {
 
         tryToStreaming = true;
         localStreams.push(selectedInputStreamName);
         currentStreams.push(selectedInputStreamName);
 
-        webRTCInput.startStreaming(OME_WEBRTC_INPUT_HOST + '/' + APP_NAME + '/' + selectedInputStreamName + '?direction=send&transport=tcp', {
+        liveKitInputMap[selectedInputStreamName].startStreaming(OME_WEBRTC_INPUT_HOST + '/' + APP_NAME + '/' + selectedInputStreamName + '?direction=send&transport=tcp', {
             maxVideoBitrate: 500
         });
     }
@@ -355,11 +353,13 @@ function renderSeats() {
 
     for (let i = 0; i < SEAT_COUNT; i++) {
 
+        const streamName = STREAM_NAME + seatRendered;
+
         const seat = $(seatTemplate({
-            streamName: STREAM_NAME + seatRendered
+            streamName: streamName
         }));
 
-        seat.find('.join-button ').data('stream-name', STREAM_NAME + seatRendered);
+        seat.find('.join-button ').data('stream-name', streamName);
 
         seat.find('.join-button ').on('click', function (e) {
 
@@ -369,14 +369,18 @@ function renderSeats() {
         });
 
         seat.on('mouseenter', function () {
-
-            seat.find('.local-player-span').fadeIn();
+            seat.find('.leave-button').stop().fadeIn();
         });
 
         seat.on('mouseleave', function () {
-            seat.find('.local-player-span').fadeOut();
+            seat.find('.leave-button').stop().fadeOut();
         });
 
+        seat.find('.leave-button ').data('stream-name', streamName);
+
+        seat.find('.leave-button').on('click', function () {
+            destroyPlayer($(this).data('stream-name'))
+        });
 
         seatArea.append(seat);
 
@@ -392,7 +396,7 @@ function createLocalPlayer(streamName) {
 
     seat.find('.local-player-area').removeClass('d-none');
 
-    document.getElementById('local-player-' + streamName).srcObject = webRTCInput.stream;
+    document.getElementById('local-player-' + streamName).srcObject = liveKitInputMap[streamName].inputStream;
 }
 
 function createPlayer(streamName) {
@@ -424,10 +428,19 @@ function createPlayer(streamName) {
     });
 }
 
+function removeInputStream(streamName) {
+    if (liveKitInputMap[streamName]) {
+
+        liveKitInputMap[streamName].remove();
+        liveKitInputMap[streamName] = null;
+        delete liveKitInputMap[streamName];
+    }
+}
+
 function destroyPlayer(streamName) {
     console.log('>>> destroyPlayer', streamName);
-    currentStreams.pop(streamName);
-    localStreams.pop(streamName);
+    currentStreams = arrayRemove(currentStreams, streamName);
+    localStreams = arrayRemove(localStreams, streamName);
 
     const seat = $('#seat-' + streamName);
     seat.removeClass('seat-on');
@@ -449,6 +462,8 @@ function destroyPlayer(streamName) {
 
         localPlayer.srcObject = null;
     }
+
+    removeInputStream(streamName);
 }
 
 async function getStreams() {
