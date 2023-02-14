@@ -3,7 +3,7 @@
 ## What is OvenSpace?
 <img src="./assets/04_OvenSpace_230214.svg" style="max-width: 100%; height: auto;">
 
-OvenSpace is Sub-Second Latency Streaming Demo Service using [OvenMediaEngine](https://github.com/AirenSoft/OvenMediaEngine) as a streaming server, [OvenPlayer](https://github.com/AirenSoft/OvenPlayer) as a player, and [OvenLiveKit](https://github.com/AirenSoft/OvenLiveKit-Web) as a live streaming encoder. This service allows 9 broadcasters to broadcast at the same time, and a large number of people can watch them.
+OvenSpace is Sub-Second Latency Streaming Demo Service using [OvenMediaEngine](https://github.com/AirenSoft/OvenMediaEngine) as a streaming server, [OvenPlayer](https://github.com/AirenSoft/OvenPlayer) as a player, and [OvenLiveKit](https://github.com/AirenSoft/OvenLiveKit-Web) as a live streaming encoder.
 
 ## Demo
 <img src="./assets/05_OvenSpace_230214.png" style="max-width: 100%; height: auto;">
