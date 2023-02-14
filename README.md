@@ -7,7 +7,7 @@ OvenSpace is Sub-Second Latency Streaming Demo Service using [OvenMediaEngine](h
 
 ## Demo
 <img src="./assets/05_OvenSpace_230214.png" style="max-width: 100%; height: auto;">
-In OvenSpace, you can use WebRTC to transmit streams for a webcam, microphone, and screen-sharing with sub-second latency. Of course, you can send the standard streaming methods using external live encoders with  RTMP and SRT to this demo. As such, 9 people can simultaneously broadcast high-definition, and hundreds of thousands of viewers can watch at the same time.
+OvenSpace allows you to stream your webcam, microphone and screen with sub-second latency using WebRTC in your browser. You can also stream your video using an external live encoder that supports RTMP and SRT. In the current demo service, 9 people can broadcast at the same time and many viewers can watch.
 
 **Please visit the [OvenSpace Demo](https://space.ovenplayer.com/) and experience Sub-Second Latency Streaming.**
 
