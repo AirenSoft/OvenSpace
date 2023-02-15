@@ -3,7 +3,7 @@
 ## What is OvenSpace?
 <img src="./assets/04_OvenSpace_230214.svg" style="max-width: 100%; height: auto;">
 
-OvenSpace is Sub-Second Latency Streaming Demo Service using [OvenMediaEngine](https://github.com/AirenSoft/OvenMediaEngine) as a streaming server, [OvenPlayer](https://github.com/AirenSoft/OvenPlayer) as a player, and [OvenLiveKit](https://github.com/AirenSoft/OvenLiveKit-Web) as a live streaming encoder. OvenSpace allows you to stream your webcam, microphone and screen with sub-second latency using WebRTC in your browser. You can also stream your video using an external live encoder that supports RTMP and SRT. And viewers can choose to watch the video over the WebRTC or LLHLS protocol.
+OvenSpace is Sub-Second Latency Streaming Demo Service using [OvenMediaEngine](https://github.com/AirenSoft/OvenMediaEngine) as a streaming server, [OvenPlayer](https://github.com/AirenSoft/OvenPlayer) as a player, and [OvenLiveKit](https://github.com/AirenSoft/OvenLiveKit-Web) as a live streaming encoder. OvenSpace allows you to stream your Webcam, Microphone, and Screen with Sub-Second Latency using WebRTC in your browser. You can also stream your video using an external live encoder that supports RTMP and SRT. And viewers can choose to watch the video over the WebRTC or LLHLS protocol.
 
 ## Demo
 <img src="./assets/05_OvenSpace_230214.png" style="max-width: 100%; height: auto;">
