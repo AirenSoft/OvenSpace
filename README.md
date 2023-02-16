@@ -13,12 +13,13 @@ In the current demo service, 9 people can broadcast at the same time and many vi
 **Please visit the [OvenSpace Demo](https://space.ovenplayer.com/) and experience Sub-Second Latency Streaming.**
 
 ## Features
-* Sub-Second Latency Streaming using WebRTC
-  * Webcam, Microphone, Srceen Sharing
-* Low Latency Streaming using LLHLS
-* RTMP Streaming through external live encoders
-  * SRT will be updated soon
-* Large-scale and High-definition Streaming
+* Ingest
+  * WebRTC (Webcam, Microphone, Screen Sharing in the browser without plug-ins)
+  * RTMP, SRT
+* Streaming
+  * Sub-Second Latency Streaming using WebRTC
+  * Low Latency Streaming using LLHLS
+* Large-scale and High-definition
 * Available on Desktop and Mobile Browsers without Plugins
 * Can be configured to use your own OvenMediaEngine
 
