@@ -17,6 +17,37 @@ body {
     }
 }
 
+@media (min-width: 576px) and (max-width: 768px) {
+    .container {
+        max-width: 100%;
+    }
+}
+
+@media (max-width: 640px) {
+    .op-setting-button {
+        display: none !important;
+    }
+}
+
+@media (max-width: 590px) {
+    .op-live-text {
+        font-size: 7px;
+    }
+}
+
+@media (max-width: 550px) {
+    .op-live-badge span {
+        display: none !important;
+    }
+
+    .op-live-badge:after {
+        font-size: 10px;
+        vertical-align: bottom;
+        content:'live';
+    }
+}
+
+
 .fw-bold {
     font-weight: 500 !important;
 }

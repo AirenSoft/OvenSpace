@@ -412,8 +412,14 @@ function createPlayer(streamName) {
         autoStart: true,
         sources: [
             {
+                label: 'WebRTC',
                 type: 'webrtc',
                 file: OME_WEBRTC_STREAMING_HOST + '/' + APP_NAME + '/' + streamName + '?transport=tcp'
+            },
+            {
+                label: 'LLHLS',
+                type: 'llhls',
+                file: OME_LLHLS_STREAMING_HOST + '/' + APP_NAME + '/' + streamName + '/llhls.m3u8'
             }
         ]
     };
@@ -482,16 +488,16 @@ function gotStreams(resp) {
 
         const streams = resp.response;
 
-        console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>');
-
-        // handled streams in OvenSpace. Local streams + Remote streams.
-        console.log('>>> currentStreams', currentStreams);
-
-        // Local streams sending to OvenMediaEngine from user device.
-        console.log('>>> local  Streams', localStreams);
-
-        // All streams created in OvenMediaEngine.
-        console.log('>>> ome    streams', streams);
+        // console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>');
+        //
+        // // handled streams in OvenSpace. Local streams + Remote streams.
+        // console.log('>>> currentStreams', currentStreams);
+        //
+        // // Local streams sending to OvenMediaEngine from user device.
+        // console.log('>>> local  Streams', localStreams);
+        //
+        // // All streams created in OvenMediaEngine.
+        // console.log('>>> ome    streams', streams);
 
 
         const missingLocalStreams = [];
@@ -504,7 +510,7 @@ function gotStreams(resp) {
             }
         });
 
-        console.log('>>> missingStreams', missingLocalStreams);
+        // console.log('>>> missingStreams', missingLocalStreams);
 
         missingLocalStreams.forEach(streamName => {
             streams.push(streamName);

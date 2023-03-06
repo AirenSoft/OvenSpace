@@ -58,6 +58,10 @@ OME_WEBRTC_STREAMING_PROTOCOL = get_ws_protocol(
     app.config['OME_WEBRTC_PUBLISHER_ENABLE_TLS'])
 OME_WEBRTC_STREAMING_HOST = f'{OME_WEBRTC_STREAMING_PROTOCOL}://{OME_HOST}:{app.config["OME_WEBRTC_PUBLISHER_PORT"]}'
 
+OME_LLHLS_STREAMING_PROTOCOL = get_http_protocol(
+    app.config['OME_LLHLS_PUBLISHER_ENABLE_TLS'])
+OME_LLHLS_STREAMING_HOST = f'{OME_LLHLS_STREAMING_PROTOCOL}://{OME_HOST}:{app.config["OME_LLHLS_PUBLISHER_PORT"]}'
+
 users = User.instance()
 
 
@@ -69,7 +73,8 @@ def space():
         stream_name=OME_STREAM_NAME,
         rtmp_input_url=OME_RTMP_INPUT_URL,
         webrtc_input_host=OME_WEBRTC_INPUT_HOST,
-        webrtc_streaming_host=OME_WEBRTC_STREAMING_HOST
+        webrtc_streaming_host=OME_WEBRTC_STREAMING_HOST,
+        llhls_streaming_host=OME_LLHLS_STREAMING_HOST
     )
 
 

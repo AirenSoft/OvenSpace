@@ -160,7 +160,7 @@
 </div>
 
 <template id="seat-template">
-    <div class="col-12 col-md-6 col-lg-4">
+    <div class="col-6 col-md-6 col-lg-4">
         <div id="seat-<%= streamName %>" class="seat mb-4 ratio ratio-16x9">
             <div class="join-area d-flex justify-content-center align-items-center w-100 h-100">
                 <button class="join-button btn btn-warning">Participate</button>
@@ -189,6 +189,7 @@
     const OME_RTMP_INPUT_URL = '{{rtmp_input_url}}';
     const OME_WEBRTC_INPUT_HOST = '{{webrtc_input_host}}';
     const OME_WEBRTC_STREAMING_HOST = '{{webrtc_streaming_host}}';
+    const OME_LLHLS_STREAMING_HOST = '{{llhls_streaming_host}}';
 </script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"
         integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
@@ -200,11 +201,12 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.min.js"
         integrity="sha512-eVL5Lb9al9FzgR63gDs1MxcDS2wFu3loYAgjIH0+Hg38tCS8Ag62dwKyH+wzDb+QauDpEZjXbMn11blw8cbTJQ=="
         crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 
 <!-- Load OvenLiveKit For Web -->
 <script src="https://cdn.jsdelivr.net/npm/ovenlivekit@1.0.4/dist/OvenLiveKit.min.js"></script>
 <!-- Load OvenPlayer -->
-<script src="https://cdn.jsdelivr.net/npm/ovenplayer@0.10.25/dist/ovenplayer.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/ovenplayer/dist/ovenplayer.js"></script>
 
 <script src="/static/js/ovenspace.js"></script>
 
