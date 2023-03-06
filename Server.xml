@@ -10,10 +10,14 @@
             <RTMP>
                 <Port>1935</Port>
             </RTMP>
+            <SRT>
+                <Port>9999</Port>
+                <WorkerCount>1</WorkerCount>
+            </SRT>
             <WebRTC>
                 <Signalling>
                     <Port>3332</Port>
-                    <TLSPort>3333</TLSPort>
+                    <!-- <TLSPort>3333</TLSPort> -->
                 </Signalling>
                 <IceCandidates>
                     <TcpRelay>*:3478</TcpRelay>
@@ -25,18 +29,23 @@
             <WebRTC>
                 <Signalling>
                     <Port>3332</Port>
-                    <TLSPort>3333</TLSPort>
+                    <!-- <TLSPort>3333</TLSPort> -->
                 </Signalling>
                 <IceCandidates>
                     <TcpRelay>*:3478</TcpRelay>
                     <IceCandidate>*:10000-10005/udp</IceCandidate>
                 </IceCandidates>
             </WebRTC>
+            <LLHLS>
+                <Port>3332</Port>
+                <!-- <TLSPort>3333</TLSPort> -->
+                <WorkerCount>1</WorkerCount>
+            </LLHLS>
         </Publishers>
         <Managers>
             <API>
                 <Port>8081</Port>
-                <TLSPort>8082</TLSPort>
+                <!-- <TLSPort>8082</TLSPort> -->
             </API>
         </Managers>
     </Bind>
@@ -45,11 +54,11 @@
             <Names>
                 <Name>*</Name>
             </Names>
-            <TLS>
+            <!-- <TLS>
                 <CertPath>/your/path/to/cert_file.crt</CertPath>
                 <ChainCertPath>/your/path/to/chain_cert_file.crt</ChainCertPath>
                 <KeyPath>/your/path/to/key_file.key</KeyPath>
-            </TLS>
+            </TLS> -->
         </Host>
         <API>
             <AccessToken>your_api_access_token</AccessToken>
@@ -65,11 +74,11 @@
                 <Names>
                     <Name>*</Name>
                 </Names>
-                <TLS>
+                <!-- <TLS>
                     <CertPath>/your/path/to/cert_file.crt</CertPath>
                     <ChainCertPath>/your/path/to/chain_cert_file.crt</ChainCertPath>
                     <KeyPath>/your/path/to/key_file.key</KeyPath>
-                </TLS>
+                </TLS> -->
             </Host>
             <!-- Settings for applications -->
             <Applications>
@@ -88,12 +97,19 @@
                                 <Audio>
                                     <Bypass>true</Bypass>
                                 </Audio>
+                                <Audio>
+                                    <Codec>opus</Codec>
+                                    <Bitrate>128000</Bitrate>
+                                    <Samplerate>48000</Samplerate>
+                                    <Channel>2</Channel>
+                                </Audio>
                             </Encodes>
                         </OutputProfile>
                     </OutputProfiles>
                     <Providers>
                         <WebRTC />
                         <RTMP />
+                        <SRT />
                     </Providers>
                     <Publishers>
                         <SessionLoadBalancingThreadCount>2</SessionLoadBalancingThreadCount>
@@ -103,6 +119,14 @@
                             <Rtx>false</Rtx>
                             <Ulpfec>false</Ulpfec>
                         </WebRTC>
+                        <LLHLS>
+                            <ChunkDuration>0.5</ChunkDuration>
+                            <SegmentDuration>6</SegmentDuration>
+                            <SegmentCount>10</SegmentCount>
+                            <CrossDomains>
+                                <Url>*</Url>
+                            </CrossDomains>
+                        </LLHLS>
                     </Publishers>
                 </Application>
             </Applications>
