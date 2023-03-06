@@ -97,7 +97,7 @@
                 </div>
                 <div id="rtmp-input-preview-area" class="row d-none">
                     <div class="col">
-                        <p class="mt-4">
+                        <p class="mt-2">
                             You can live streaming using live encoders such as
                             <a target="_blank" href="https://obsproject.com/">OBS</a>,
                             <a target="_blank" href="https://www.xsplit.com/">XSplit</a>, and
@@ -105,17 +105,31 @@
                                href="https://play.google.com/store/apps/details?id=com.airensoft.ovenstreamencoder.camera">OvenStreamEncoder</a>.
                         </p>
                         <p>
-                            Detailed documentation can be found
+                            Getting started can be found
                             <a target="_blank"
-                               href="https://airensoft.gitbook.io/ovenmediaengine/getting-started#start-streaming">here</a>.
+                               href="https://airensoft.gitbook.io/ovenmediaengine/getting-started#hello-sub-second-latency-streaming">here</a>.
                         </p>
-                        <div class="mt-4">
+                        <div class="mt-2 d-flex">
+                            <h4 class="mb-0">RTMP</h4>
+                            <a class="ms-1 text-sm" target="_blank"
+                               href="https://airensoft.gitbook.io/ovenmediaengine/live-source/rtmp#publish"><span class="border px-1">manual</span></a>
+                        </div>
+                        <div class="mt-2 ms-2">
                             <label for="exampleFormControlInput1" class="form-label">Server</label>
                             <input id="rtmp-input-url-input" type="text" class="form-control" readonly>
                         </div>
-                        <div class="mt-2">
+                        <div class="mt-2 ms-2">
                             <label for="exampleFormControlInput1" class="form-label">Stream Key</label>
                             <input id="rtmp-input-streamkey-input" type="text" class="form-control" readonly>
+                        </div>
+                        <div class="mt-4 d-flex">
+                            <h4 class="mb-0">SRT</h4>
+                            <a class="ms-1 text-sm" target="_blank"
+                               href="https://airensoft.gitbook.io/ovenmediaengine/live-source/srt-beta#encoders-and-streamid"><span class="border px-1">manual</span></a>
+                        </div>
+                        <div class="mt-2 ms-2">
+                            <label for="exampleFormControlInput1" class="form-label">SRT URL</label>
+                            <input id="srt-input-url-input" type="text" class="form-control" readonly>
                         </div>
                         <div id="waiting-rtmp-input-text" class="mt-4 text-center">
                             <div class="spinner-grow spinner-grow-sm" role="status">
@@ -124,7 +138,7 @@
                             Waiting for input stream.
                         </div>
                         <div id="connected-rtmp-input-text" class="mt-4 text-center text-primary d-none">
-                            The rtmp input stream is connected. <br>
+                            The input stream is connected. <br>
                             <span class="text-muted small">(The popup will close automatically.)</span>
                         </div>
                         <div class="mt-5 mb-4">
@@ -187,6 +201,7 @@
     const APP_NAME = '{{app_name}}';
     const STREAM_NAME = '{{stream_name}}';
     const OME_RTMP_INPUT_URL = '{{rtmp_input_url}}';
+    const OME_SRT_INPUT_URL = '{{srt_input_url}}';
     const OME_WEBRTC_INPUT_HOST = '{{webrtc_input_host}}';
     const OME_WEBRTC_STREAMING_HOST = '{{webrtc_streaming_host}}';
     const OME_LLHLS_STREAMING_HOST = '{{llhls_streaming_host}}';

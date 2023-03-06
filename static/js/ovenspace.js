@@ -25,6 +25,7 @@ const constraintsSelect = $('.constraints-select');
 
 const rtmpInputUrlInput = $('#rtmp-input-url-input');
 const rtmpInputStreamkeyInput = $('#rtmp-input-streamkey-input');
+const srtInputUrlInput = $('#srt-input-url-input');
 const waitingRtmpInputText = $('#waiting-rtmp-input-text');
 const connectedRtmpInputText = $('#connected-rtmp-input-text');
 
@@ -235,6 +236,8 @@ function readyStreaming() {
 
         rtmpInputUrlInput.val(OME_RTMP_INPUT_URL);
         rtmpInputStreamkeyInput.val(selectedInputStreamName);
+
+        srtInputUrlInput.val(OME_SRT_INPUT_URL + encodeURIComponent(selectedInputStreamName));
     }
 
 }
@@ -409,6 +412,7 @@ function createPlayer(streamName) {
 
     const playerOption = {
         // image: OME_THUMBNAIL_HOST + '/' + APP_NAME + '/' + streamName + '/thumb.png',
+        autoFallback: false,
         autoStart: true,
         sources: [
             {
@@ -531,7 +535,7 @@ function gotStreams(resp) {
                     setTimeout(function () {
 
                         inputDeviceModal.modal('hide');
-                    }, 3000)
+                    }, 4000)
                 }
 
                 // making peer connection with zero delay don't work well...

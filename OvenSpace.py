@@ -2,6 +2,7 @@ import base64
 import requests
 from flask import Flask, render_template
 from flask_socketio import SocketIO, emit
+from urllib import parse
 
 from components.user import User
 
@@ -50,6 +51,10 @@ OME_API_GET_STREAMS = OME_API_HOST + \
 
 OME_RTMP_INPUT_URL = f'rtmp://{OME_HOST}:{ app.config["OME_RTMP_PROVIDER_PORT"]}/{OME_APP_NAME}'
 
+
+percent_encoded_stream_id = parse.quote(f'srt://{OME_HOST}:{ app.config["OME_SRT_PROVIDER_PORT"]}/{OME_APP_NAME}/', safe='')
+OME_SRT_INPUT_URL = f'srt://{OME_HOST}:{ app.config["OME_SRT_PROVIDER_PORT"]}?streamid={percent_encoded_stream_id}'
+
 OME_WEBRTC_INPUT_PROTOCOL = get_ws_protocol(
     app.config['OME_WEBRTC_PROVIDER_ENABLE_TLS'])
 OME_WEBRTC_INPUT_HOST = f'{OME_WEBRTC_INPUT_PROTOCOL}://{OME_HOST}:{app.config["OME_WEBRTC_PROVIDER_PORT"]}'
@@ -72,6 +77,7 @@ def space():
         app_name=OME_APP_NAME,
         stream_name=OME_STREAM_NAME,
         rtmp_input_url=OME_RTMP_INPUT_URL,
+        srt_input_url=OME_SRT_INPUT_URL,
         webrtc_input_host=OME_WEBRTC_INPUT_HOST,
         webrtc_streaming_host=OME_WEBRTC_STREAMING_HOST,
         llhls_streaming_host=OME_LLHLS_STREAMING_HOST
