@@ -304,9 +304,7 @@ function startStreaming() {
         localStreams.push(selectedInputStreamName);
         currentStreams.push(selectedInputStreamName);
 
-        liveKitInputMap[selectedInputStreamName].startStreaming(OME_WEBRTC_INPUT_HOST + '/' + APP_NAME + '/' + selectedInputStreamName + '?direction=send&transport=tcp', {
-            maxVideoBitrate: 500
-        });
+        liveKitInputMap[selectedInputStreamName].startStreaming(OME_WEBRTC_INPUT_HOST + '/' + APP_NAME + '/' + selectedInputStreamName + '?direction=send&transport=tcp');
     }
 }
 
