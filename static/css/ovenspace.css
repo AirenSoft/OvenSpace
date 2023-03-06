@@ -1,6 +1,7 @@
 /* Overriding some bootstrap styles. */
 :root {
     --ovenspace-body-font-size: .825rem;
+    --ovenspace-body-font-color: #1a1a1a;
     --bs-font-sans-serif: "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
 }
 
@@ -11,11 +12,19 @@ body {
     color: #6c757d;
 }
 
+
 @media (min-width: 1200px) {
     .container {
         max-width: 1150px;
     }
 }
+
+@media (min-width: 2000px) {
+    .container {
+        max-width: 1750px;
+    }
+}
+
 
 @media (min-width: 576px) and (max-width: 768px) {
     .container {
@@ -43,10 +52,27 @@ body {
     .op-live-badge:after {
         font-size: 10px;
         vertical-align: bottom;
-        content:'live';
+        content: 'live';
     }
 }
 
+.header-link {
+    font-size: 1rem;
+    color: var(--ovenspace-body-font-color);
+    font-weight: 500;
+    transition: color 0.1s;
+}
+
+.header-link:hover {
+    color: #fbba1e;
+}
+
+.about-text {
+    word-break: keep-all;
+    text-align: center;
+    color: var(--ovenspace-body-font-color);
+    line-height: 1.8;
+}
 
 .fw-bold {
     font-weight: 500 !important;
@@ -135,11 +161,11 @@ body {
 }
 
 .input-device-modal .modal-header {
-    background: #ffbb10;
+    background: #fbba1e;
 }
 
 .input-device-modal .modal-header h5 {
-    color: #000;
+    color: var(--ovenspace-body-font-color);
 }
 
 .input-device-modal .modal-content {
@@ -147,14 +173,14 @@ body {
 }
 
 .btn-warning {
-    background: #ffbb10;
-    border-color: #ffbb10;
-    color: #000 !important;
+    background: #fbba1e;
+    border-color: #fbba1e;
+    color: var(--ovenspace-body-font-color) !important;
 }
 
 .local-player-span {
     position: absolute;
-    color: #000;
+    color: var(--ovenspace-body-font-color);
     background: rgb(255 187 16 / 70%);
     padding: 0.1rem 0.3rem;
     border-radius: 0.2rem;
@@ -172,4 +198,26 @@ body {
     width: 100%;
     height: 100%;
     object-fit: cover;
+}
+
+.social-buttons {
+    color: #6C757D;
+    padding: 0;
+    width: 2.3125rem;
+    height: 2.3125rem;
+    border:none;
+    background: none;
+}
+
+.social-buttons:hover {
+    color: #fff;
+}
+
+.social-buttons .fab {
+    width: 2.3125rem;
+    line-height: 1.9;
+}
+
+.social-buttons .fab:before {
+    font-size: 1.2rem;
 }
