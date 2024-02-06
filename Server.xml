@@ -112,8 +112,8 @@
                         <SRT />
                     </Providers>
                     <Publishers>
-                        <SessionLoadBalancingThreadCount>2</SessionLoadBalancingThreadCount>
-                        <StreamLoadBalancingThreadCount>4</StreamLoadBalancingThreadCount>
+                        <AppWorkerCount>1</AppWorkerCount>
+                        <StreamWorkerCount>8</StreamWorkerCount>
                         <WebRTC>
                             <Timeout>30000</Timeout>
                             <Rtx>false</Rtx>
