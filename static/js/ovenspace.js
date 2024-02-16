@@ -26,6 +26,7 @@ const constraintsSelect = $('.constraints-select');
 const rtmpInputUrlInput = $('#rtmp-input-url-input');
 const rtmpInputStreamkeyInput = $('#rtmp-input-streamkey-input');
 const srtInputUrlInput = $('#srt-input-url-input');
+const whipInputUrlInput = $('#whip-input-url-input');
 const waitingRtmpInputText = $('#waiting-rtmp-input-text');
 const connectedRtmpInputText = $('#connected-rtmp-input-text');
 
@@ -44,544 +45,547 @@ const totalUserCountSpan = $('#total-user-count-span');
 const videoUserCountSpan = $('#video-user-count-span');
 
 if (!navigator.mediaDevices.getDisplayMedia) {
-    shareDisplayButton.addClass('d-none');
+  shareDisplayButton.addClass('d-none');
 }
 
 shareDeviceButton.on('click', function () {
 
-    shareMode = 'device';
+  shareMode = 'device';
 
-    OvenLiveKit.getDevices()
-        .then(function (devices) {
+  OvenLiveKit.getDevices()
+    .then(function (devices) {
 
-            if (devices) {
-                renderDevice('video', videoSourceSelect, devices.videoinput,);
-                renderDevice('audio', audioSourceSelect, devices.audioinput);
-            }
+      if (devices) {
+        renderDevice('video', videoSourceSelect, devices.videoinput,);
+        renderDevice('audio', audioSourceSelect, devices.audioinput);
+      }
 
-            createWebRTCInput();
-        })
-        .catch(function (error) {
+      createWebRTCInput();
+    })
+    .catch(function (error) {
 
-            showErrorMessage(error);
-        });
+      showErrorMessage(error);
+    });
 });
 
 constraintsSelect.on('change', function () {
 
-    removeInputStream(selectedInputStreamName);
-    createWebRTCInput();
+  removeInputStream(selectedInputStreamName);
+  createWebRTCInput();
 });
 
 shareRtmpButton.on('click', function () {
-    shareMode = 'rtmp';
-    readyStreaming();
+  shareMode = 'rtmp';
+  readyStreaming();
 });
 
 shareDisplayButton.on('click', function () {
 
-    shareMode = 'display';
+  shareMode = 'display';
 
-    createWebRTCInput();
+  createWebRTCInput();
 });
 
 backToCaptureSelectButton.on('click', function () {
 
-    cancelReadyStreaming();
+  cancelReadyStreaming();
 });
 
 startShareButton.on('click', function () {
 
-    startStreaming();
+  startStreaming();
 });
 
 function renderDevice(type, select, devices) {
 
-    select.empty();
+  select.empty();
 
-    if (devices.length === 0) {
+  if (devices.length === 0) {
 
-        select.append('<option value="">No Source Available</option>')
-    } else {
+    select.append('<option value="">No Source Available</option>')
+  } else {
 
-        _.each(devices, function (device) {
+    _.each(devices, function (device) {
 
-            let option = $('<option></option>');
+      let option = $('<option></option>');
 
-            option.text(device.label);
-            option.val(device.deviceId);
-            select.append(option);
-        });
-    }
+      option.text(device.label);
+      option.val(device.deviceId);
+      select.append(option);
+    });
+  }
 
-    select.find('option').eq(0).prop('selected', true);
+  select.find('option').eq(0).prop('selected', true);
 }
 
 function arrayRemove(arr, value) {
 
-    return arr.filter(function (ele) {
-        return ele != value;
-    });
+  return arr.filter(function (ele) {
+    return ele != value;
+  });
 }
 
 function createWebRTCInput() {
 
-    const input = OvenLiveKit.create({
-        callbacks: {
-            connected: function () {
+  const input = OvenLiveKit.create({
+    callbacks: {
+      connected: function () {
 
-                console.log('App Connected');
+        console.log('App Connected');
 
-                if (tryToStreaming) {
+        if (tryToStreaming) {
 
-                    createLocalPlayer(selectedInputStreamName);
-                    inputDeviceModal.modal('hide');
+          createLocalPlayer(selectedInputStreamName);
+          inputDeviceModal.modal('hide');
 
-                    tryToStreaming = false;
-                }
-            },
-            connectionClosed: function (type, event) {
-
-                console.log('App Connection Closed');
-
-                if (type === 'websocket') {
-
-                }
-                if (type === 'ice') {
-
-                }
-            },
-            iceStateChange: function (state) {
-
-                console.log('App ICE State', state);
-            },
-            error: function (error) {
-
-                console.log('App Error On OvenLiveKit', error);
-
-                if (tryToStreaming) {
-
-                    currentStreams = arrayRemove(currentStreams, selectedInputStreamName);
-                    localStreams = arrayRemove(localStreams, selectedInputStreamName);
-                    tryToStreaming = false;
-                }
-
-                showErrorMessage(error);
-            }
+          tryToStreaming = false;
         }
+      },
+      connectionClosed: function (type, event) {
+
+        console.log('App Connection Closed');
+
+        if (type === 'websocket') {
+
+        }
+        if (type === 'ice') {
+
+        }
+      },
+      iceStateChange: function (state) {
+
+        console.log('App ICE State', state);
+      },
+      error: function (error) {
+
+        console.log('App Error On OvenLiveKit', error);
+
+        if (tryToStreaming) {
+
+          currentStreams = arrayRemove(currentStreams, selectedInputStreamName);
+          localStreams = arrayRemove(localStreams, selectedInputStreamName);
+          tryToStreaming = false;
+        }
+
+        showErrorMessage(error);
+      }
+    }
+  });
+
+  input.attachMedia(inputVideo);
+
+  let errorMsg = null;
+
+  if (shareMode === 'device') {
+
+    input.getUserMedia(getDeviceConstraints()).then(function (stream) {
+
+    }).catch(function (error) {
+      // cancelReadyStreaming();
+      errorMsg = error;
+    }).finally(function () {
+      readyStreaming();
+      deviceInputPreviewArea.removeClass('d-none');
+      sourceSelectArea.removeClass('d-none');
+      if (errorMsg) {
+        showErrorMessage(errorMsg);
+      }
     });
+  }
 
-    input.attachMedia(inputVideo);
+  if (shareMode === 'display') {
 
-    let errorMsg = null;
+    input.getDisplayMedia(getDisplayConstraints()).then(function (stream) {
 
-    if (shareMode === 'device') {
+    }).catch(function (error) {
+      // cancelReadyStreaming();
+      errorMsg = error;
 
-        input.getUserMedia(getDeviceConstraints()).then(function (stream) {
+    }).finally(function () {
+      readyStreaming();
+      deviceInputPreviewArea.removeClass('d-none');
+      sourceSelectArea.addClass('d-none');
+      if (errorMsg) {
+        showErrorMessage(errorMsg);
+      }
+    });
+  }
 
-        }).catch(function (error) {
-            // cancelReadyStreaming();
-            errorMsg = error;
-        }).finally(function () {
-            readyStreaming();
-            deviceInputPreviewArea.removeClass('d-none');
-            sourceSelectArea.removeClass('d-none');
-            if (errorMsg) {
-                showErrorMessage(errorMsg);
-            }
-        });
-    }
-
-    if (shareMode === 'display') {
-
-        input.getDisplayMedia(getDisplayConstraints()).then(function (stream) {
-
-        }).catch(function (error) {
-            // cancelReadyStreaming();
-            errorMsg = error;
-
-        }).finally(function () {
-            readyStreaming();
-            deviceInputPreviewArea.removeClass('d-none');
-            sourceSelectArea.addClass('d-none');
-            if (errorMsg) {
-                showErrorMessage(errorMsg);
-            }
-        });
-    }
-
-    liveKitInputMap[selectedInputStreamName] = input;
+  liveKitInputMap[selectedInputStreamName] = input;
 }
 
 function readyStreaming() {
 
-    captureSelectArea.addClass('d-none');
-    inputErrorMessage.addClass('d-none').text('');
+  captureSelectArea.addClass('d-none');
+  inputErrorMessage.addClass('d-none').text('');
 
-    if (shareMode === 'device' || shareMode === 'display') {
-        deviceInputPreviewArea.find('button').prop('disabled', false);
+  if (shareMode === 'device' || shareMode === 'display') {
+    deviceInputPreviewArea.find('button').prop('disabled', false);
 
-        if (shareMode === 'device') {
-            beforeStreamingTitle.text('Click start button to share your WebCam / Mic');
-        } else if (shareMode === 'display') {
-            beforeStreamingTitle.text('Click start button to share screen');
-        }
-
+    if (shareMode === 'device') {
+      beforeStreamingTitle.text('Click start button to share your WebCam / Mic');
+    } else if (shareMode === 'display') {
+      beforeStreamingTitle.text('Click start button to share screen');
     }
 
-    if (shareMode === 'rtmp') {
-        rtmpInputPreviewArea.find('button').prop('disabled', false);
-        rtmpInputPreviewArea.removeClass('d-none');
-        beforeStreamingTitle.text('Send the input stream using a live encoder.');
+  }
 
-        rtmpInputUrlInput.val(OME_RTMP_INPUT_URL);
-        rtmpInputStreamkeyInput.val(selectedInputStreamName);
+  if (shareMode === 'rtmp') {
+    rtmpInputPreviewArea.find('button').prop('disabled', false);
+    rtmpInputPreviewArea.removeClass('d-none');
+    beforeStreamingTitle.text('Send the input stream using a live encoder.');
 
-        srtInputUrlInput.val(OME_SRT_INPUT_URL + encodeURIComponent(selectedInputStreamName));
-    }
+    rtmpInputUrlInput.val(OME_RTMP_INPUT_URL);
+    rtmpInputStreamkeyInput.val(selectedInputStreamName);
+
+    srtInputUrlInput.val(OME_SRT_INPUT_URL + encodeURIComponent(selectedInputStreamName));
+
+    const whipInputUrl = OME_WEBRTC_INPUT_HOST.replace('ws', 'http') + '/' + APP_NAME + '/' + selectedInputStreamName + '?direction=whip&transport=tcp';
+    whipInputUrlInput.val(whipInputUrl);
+  }
 
 }
 
 function resetInputUI() {
 
-    inputVideo.srcObject = null;
-    shareMode = null;
+  inputVideo.srcObject = null;
+  shareMode = null;
 
-    deviceInputPreviewArea.addClass('d-none');
-    deviceInputPreviewArea.find('button').prop('disabled', true);
+  deviceInputPreviewArea.addClass('d-none');
+  deviceInputPreviewArea.find('button').prop('disabled', true);
 
-    rtmpInputPreviewArea.addClass('d-none');
-    rtmpInputPreviewArea.find('button').prop('disabled', true);
+  rtmpInputPreviewArea.addClass('d-none');
+  rtmpInputPreviewArea.find('button').prop('disabled', true);
 
-    waitingRtmpInputText.removeClass('d-none');
-    connectedRtmpInputText.addClass('d-none');
+  waitingRtmpInputText.removeClass('d-none');
+  connectedRtmpInputText.addClass('d-none');
 
 
-    beforeStreamingTitle.text('Please choose sharing mode');
-    captureSelectArea.removeClass('d-none');
+  beforeStreamingTitle.text('Please choose sharing mode');
+  captureSelectArea.removeClass('d-none');
 
-    inputErrorMessage.addClass('d-none').text('');
+  inputErrorMessage.addClass('d-none').text('');
 }
 
 function cancelReadyStreaming() {
-    removeInputStream(selectedInputStreamName);
-    resetInputUI();
+  removeInputStream(selectedInputStreamName);
+  resetInputUI();
 }
 
 function showErrorMessage(error) {
 
-    let errorMessage = '';
+  let errorMessage = '';
 
-    if (error.message) {
+  if (error.message) {
 
-        errorMessage = error.message;
-    } else if (error.name) {
+    errorMessage = error.message;
+  } else if (error.name) {
 
-        errorMessage = error.name;
-    } else {
+    errorMessage = error.name;
+  } else {
 
-        errorMessage = error.toString();
-    }
+    errorMessage = error.toString();
+  }
 
-    if (errorMessage === 'OverconstrainedError') {
+  if (errorMessage === 'OverconstrainedError') {
 
-        errorMessage = 'The input device does not support the specified resolution or frame rate.';
-    }
+    errorMessage = 'The input device does not support the specified resolution or frame rate.';
+  }
 
-    if (errorMessage === 'Cannot create offer') {
+  if (errorMessage === 'Cannot create offer') {
 
-        errorMessage = 'Cannot create stream.';
-    }
+    errorMessage = 'Cannot create stream.';
+  }
 
-    inputErrorMessage.removeClass('d-none').text(errorMessage);
+  inputErrorMessage.removeClass('d-none').text(errorMessage);
 }
 
 function startStreaming() {
 
-    if (selectedInputStreamName && liveKitInputMap[selectedInputStreamName]) {
+  if (selectedInputStreamName && liveKitInputMap[selectedInputStreamName]) {
 
-        tryToStreaming = true;
-        localStreams.push(selectedInputStreamName);
-        currentStreams.push(selectedInputStreamName);
+    tryToStreaming = true;
+    localStreams.push(selectedInputStreamName);
+    currentStreams.push(selectedInputStreamName);
 
-        liveKitInputMap[selectedInputStreamName].startStreaming(OME_WEBRTC_INPUT_HOST + '/' + APP_NAME + '/' + selectedInputStreamName + '?direction=send&transport=tcp');
-    }
+    liveKitInputMap[selectedInputStreamName].startStreaming(OME_WEBRTC_INPUT_HOST + '/' + APP_NAME + '/' + selectedInputStreamName + '?direction=send&transport=tcp');
+  }
 }
 
 inputDeviceModal.on('hidden.bs.modal', function () {
-    resetInputUI();
+  resetInputUI();
 });
 
 function getDeviceConstraints() {
 
-    let videoDeviceId = videoSourceSelect.val();
-    let audioDeviceId = audioSourceSelect.val();
+  let videoDeviceId = videoSourceSelect.val();
+  let audioDeviceId = audioSourceSelect.val();
 
-    let newConstraints = {};
+  let newConstraints = {};
 
-    if (videoDeviceId) {
-        newConstraints.video = {
-            deviceId: {
-                exact: videoDeviceId
-            }
-        };
-    }
+  if (videoDeviceId) {
+    newConstraints.video = {
+      deviceId: {
+        exact: videoDeviceId
+      }
+    };
+  }
 
-    if (audioDeviceId) {
-        newConstraints.audio = {
-            deviceId: {
-                exact: audioDeviceId
-            }
-        };
-    }
+  if (audioDeviceId) {
+    newConstraints.audio = {
+      deviceId: {
+        exact: audioDeviceId
+      }
+    };
+  }
 
-    return newConstraints;
+  return newConstraints;
 }
 
 function getDisplayConstraints() {
 
-    let newConstraint = {};
+  let newConstraint = {};
 
-    newConstraint.video = true;
-    newConstraint.audio = true;
+  newConstraint.video = true;
+  newConstraint.audio = true;
 
-    return newConstraint;
+  return newConstraint;
 }
 
 function renderSeats() {
 
-    let seatRendered = 0;
+  let seatRendered = 0;
 
-    for (let i = 0; i < SEAT_COUNT; i++) {
+  for (let i = 0; i < SEAT_COUNT; i++) {
 
-        const streamName = STREAM_NAME + seatRendered;
+    const streamName = STREAM_NAME + seatRendered;
 
-        const seat = $(seatTemplate({
-            streamName: streamName
-        }));
+    const seat = $(seatTemplate({
+      streamName: streamName
+    }));
 
-        seat.find('.join-button ').data('stream-name', streamName);
+    seat.find('.join-button ').data('stream-name', streamName);
 
-        seat.find('.join-button ').on('click', function (e) {
+    seat.find('.join-button ').on('click', function (e) {
 
-            selectedInputStreamName = $(this).data('stream-name');
+      selectedInputStreamName = $(this).data('stream-name');
 
-            inputDeviceModal.modal('show');
-        });
+      inputDeviceModal.modal('show');
+    });
 
-        seat.on('mouseenter', function () {
-            seat.find('.leave-button').stop().fadeIn();
-        });
+    seat.on('mouseenter', function () {
+      seat.find('.leave-button').stop().fadeIn();
+    });
 
-        seat.on('mouseleave', function () {
-            seat.find('.leave-button').stop().fadeOut();
-        });
+    seat.on('mouseleave', function () {
+      seat.find('.leave-button').stop().fadeOut();
+    });
 
-        seat.find('.leave-button ').data('stream-name', streamName);
+    seat.find('.leave-button ').data('stream-name', streamName);
 
-        seat.find('.leave-button').on('click', function () {
-            destroyPlayer($(this).data('stream-name'))
-        });
+    seat.find('.leave-button').on('click', function () {
+      destroyPlayer($(this).data('stream-name'))
+    });
 
-        seatArea.append(seat);
+    seatArea.append(seat);
 
-        seatRendered++;
-    }
+    seatRendered++;
+  }
 }
 
 function createLocalPlayer(streamName) {
 
-    const seat = $('#seat-' + streamName);
+  const seat = $('#seat-' + streamName);
 
-    seat.addClass('seat-on');
+  seat.addClass('seat-on');
 
-    seat.find('.local-player-area').removeClass('d-none');
+  seat.find('.local-player-area').removeClass('d-none');
 
-    document.getElementById('local-player-' + streamName).srcObject = liveKitInputMap[streamName].inputStream;
+  document.getElementById('local-player-' + streamName).srcObject = liveKitInputMap[streamName].inputStream;
 }
 
 function createPlayer(streamName) {
 
-    const seat = $('#seat-' + streamName);
+  const seat = $('#seat-' + streamName);
 
-    seat.addClass('seat-on');
+  seat.addClass('seat-on');
 
-    seat.find('.player-area').removeClass('d-none');
+  seat.find('.player-area').removeClass('d-none');
 
-    const playerOption = {
-        // image: OME_THUMBNAIL_HOST + '/' + APP_NAME + '/' + streamName + '/thumb.png',
-        autoFallback: false,
-        autoStart: true,
-        sources: [
-            {
-                label: 'WebRTC',
-                type: 'webrtc',
-                file: OME_WEBRTC_STREAMING_HOST + '/' + APP_NAME + '/' + streamName + '?transport=tcp'
-            },
-            {
-                label: 'LLHLS',
-                type: 'llhls',
-                file: OME_LLHLS_STREAMING_HOST + '/' + APP_NAME + '/' + streamName + '/llhls.m3u8'
-            }
-        ]
-    };
+  const playerOption = {
+    // image: OME_THUMBNAIL_HOST + '/' + APP_NAME + '/' + streamName + '/thumb.png',
+    autoFallback: false,
+    autoStart: true,
+    sources: [
+      {
+        label: 'WebRTC',
+        type: 'webrtc',
+        file: OME_WEBRTC_STREAMING_HOST + '/' + APP_NAME + '/' + streamName + '?transport=tcp'
+      },
+      {
+        label: 'LLHLS',
+        type: 'llhls',
+        file: OME_LLHLS_STREAMING_HOST + '/' + APP_NAME + '/' + streamName + '/llhls.m3u8'
+      }
+    ]
+  };
 
-    const player = OvenPlayer.create(document.getElementById('player-' + streamName), playerOption);
+  const player = OvenPlayer.create(document.getElementById('player-' + streamName), playerOption);
 
-    player.on('error', function (error) {
+  player.on('error', function (error) {
 
-        console.log('App Error On Player', error);
+    console.log('App Error On Player', error);
 
-        destroyPlayer(streamName);
-    });
+    destroyPlayer(streamName);
+  });
 }
 
 function removeInputStream(streamName) {
-    if (liveKitInputMap[streamName]) {
+  if (liveKitInputMap[streamName]) {
 
-        liveKitInputMap[streamName].remove();
-        liveKitInputMap[streamName] = null;
-        delete liveKitInputMap[streamName];
-    }
+    liveKitInputMap[streamName].remove();
+    liveKitInputMap[streamName] = null;
+    delete liveKitInputMap[streamName];
+  }
 }
 
 function destroyPlayer(streamName) {
-    console.log('>>> destroyPlayer', streamName);
-    currentStreams = arrayRemove(currentStreams, streamName);
-    localStreams = arrayRemove(localStreams, streamName);
+  console.log('>>> destroyPlayer', streamName);
+  currentStreams = arrayRemove(currentStreams, streamName);
+  localStreams = arrayRemove(localStreams, streamName);
 
-    const seat = $('#seat-' + streamName);
-    seat.removeClass('seat-on');
+  const seat = $('#seat-' + streamName);
+  seat.removeClass('seat-on');
 
-    seat.find('.player-area').addClass('d-none');
+  seat.find('.player-area').addClass('d-none');
 
-    const player = OvenPlayer.getPlayerByContainerId('player-' + streamName);
+  const player = OvenPlayer.getPlayerByContainerId('player-' + streamName);
 
-    if (player) {
+  if (player) {
 
-        player.remove();
-    }
+    player.remove();
+  }
 
-    seat.find('.local-player-area').addClass('d-none');
+  seat.find('.local-player-area').addClass('d-none');
 
-    const localPlayer = document.getElementById('local-player-' + streamName);
+  const localPlayer = document.getElementById('local-player-' + streamName);
 
-    if (localPlayer) {
+  if (localPlayer) {
 
-        localPlayer.srcObject = null;
-    }
+    localPlayer.srcObject = null;
+  }
 
-    removeInputStream(streamName);
+  removeInputStream(streamName);
 }
 
 async function getStreams() {
 
-    const promise = await $.ajax({
-        method: 'get',
-        url: '/getStreams',
-    });
+  const promise = await $.ajax({
+    method: 'get',
+    url: '/getStreams',
+  });
 
-    return promise;
+  return promise;
 }
 
 function gotStreams(resp) {
 
-    if (resp.statusCode === 200) {
+  if (resp.statusCode === 200) {
 
-        const streams = resp.response;
+    const streams = resp.response;
 
-        // console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>');
-        //
-        // // handled streams in OvenSpace. Local streams + Remote streams.
-        // console.log('>>> currentStreams', currentStreams);
-        //
-        // // Local streams sending to OvenMediaEngine from user device.
-        // console.log('>>> local  Streams', localStreams);
-        //
-        // // All streams created in OvenMediaEngine.
-        // console.log('>>> ome    streams', streams);
+    // console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>');
+    //
+    // // handled streams in OvenSpace. Local streams + Remote streams.
+    // console.log('>>> currentStreams', currentStreams);
+    //
+    // // Local streams sending to OvenMediaEngine from user device.
+    // console.log('>>> local  Streams', localStreams);
+    //
+    // // All streams created in OvenMediaEngine.
+    // console.log('>>> ome    streams', streams);
 
 
-        const missingLocalStreams = [];
+    const missingLocalStreams = [];
 
-        // Care ome stream creating is slow
-        localStreams.forEach(streamName => {
+    // Care ome stream creating is slow
+    localStreams.forEach(streamName => {
 
-            if (!streams.includes(streamName)) {
-                missingLocalStreams.push(streamName);
-            }
-        });
+      if (!streams.includes(streamName)) {
+        missingLocalStreams.push(streamName);
+      }
+    });
 
-        // console.log('>>> missingStreams', missingLocalStreams);
+    // console.log('>>> missingStreams', missingLocalStreams);
 
-        missingLocalStreams.forEach(streamName => {
-            streams.push(streamName);
-        });
+    missingLocalStreams.forEach(streamName => {
+      streams.push(streamName);
+    });
 
-        streams.forEach((streamName, index) => {
+    streams.forEach((streamName, index) => {
 
-            // Create player when new stream is detected
-            if (!currentStreams.includes(streamName)) {
+      // Create player when new stream is detected
+      if (!currentStreams.includes(streamName)) {
 
-                // rtmp input stream detected
-                if (shareMode === 'rtmp'
-                    && streamName === selectedInputStreamName) {
+        // rtmp input stream detected
+        if (shareMode === 'rtmp'
+          && streamName === selectedInputStreamName) {
 
-                    waitingRtmpInputText.addClass('d-none');
-                    connectedRtmpInputText.removeClass('d-none');
+          waitingRtmpInputText.addClass('d-none');
+          connectedRtmpInputText.removeClass('d-none');
 
-                    setTimeout(function () {
+          setTimeout(function () {
 
-                        inputDeviceModal.modal('hide');
-                    }, 4000)
-                }
+            inputDeviceModal.modal('hide');
+          }, 4000)
+        }
 
-                // making peer connection with zero delay don't work well...
-                setTimeout(function () {
-                    console.log('>>> createPlayer', streamName);
-                    createPlayer(streamName);
-                }, 200 * index);
-            }
-        });
+        // making peer connection with zero delay don't work well...
+        setTimeout(function () {
+          console.log('>>> createPlayer', streamName);
+          createPlayer(streamName);
+        }, 200 * index);
+      }
+    });
 
-        currentStreams.forEach(streamName => {
+    currentStreams.forEach(streamName => {
 
-            // Delete player when exising stream is removed
-            if (!streams.includes(streamName) && !localStreams.includes(streamName)) {
+      // Delete player when exising stream is removed
+      if (!streams.includes(streamName) && !localStreams.includes(streamName)) {
 
-                destroyPlayer(streamName);
-            }
-        });
+        destroyPlayer(streamName);
+      }
+    });
 
-        currentStreams = streams;
+    currentStreams = streams;
 
-        videoUserCountSpan.text(currentStreams.length);
-    }
+    videoUserCountSpan.text(currentStreams.length);
+  }
 }
 
 function checkStream() {
 
-    getStreams().then(gotStreams).catch(function (e) {
-        console.error('Could not get streams from OME.');
-    });
+  getStreams().then(gotStreams).catch(function (e) {
+    console.error('Could not get streams from OME.');
+  });
 }
 
 function startStreamCheckTimer() {
 
+  checkStream();
+
+  setInterval(() => {
+
     checkStream();
-
-    setInterval(() => {
-
-        checkStream();
-    }, 2500);
+  }, 2500);
 }
 
 let socket = io({
-    transports: ['websocket']
+  transports: ['websocket']
 });
 
 socket.on('user count', function (data) {
-    totalUserCountSpan.text(data.user_count);
+  totalUserCountSpan.text(data.user_count);
 });
 
 renderSeats();
