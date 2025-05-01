@@ -67,6 +67,9 @@ OME_LLHLS_STREAMING_PROTOCOL = get_http_protocol(
     app.config['OME_LLHLS_PUBLISHER_ENABLE_TLS'])
 OME_LLHLS_STREAMING_HOST = f'{OME_LLHLS_STREAMING_PROTOCOL}://{OME_HOST}:{app.config["OME_LLHLS_PUBLISHER_PORT"]}'
 
+SITE_HOST = app.config['SITE_HOST']
+SITE_PORT = app.config['SITE_PORT']
+
 users = User.instance()
 
 
@@ -113,5 +116,5 @@ def on_disconnect():
 
 
 if __name__ == '__main__':
-    socketio.run(app, host='0.0.0.0', port=5000,
+    socketio.run(app, host=SITE_HOST, port=int(SITE_PORT),
                  debug=True, use_reloader=True)
